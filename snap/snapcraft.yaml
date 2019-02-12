@@ -1,5 +1,5 @@
 name: brave
-version: v0.58.21-3
+version: 0.59.35
 summary: Browse faster and safer with Brave.
 description: |
  The new Brave browser automatically blocks ads and trackers, making it
@@ -11,16 +11,16 @@ confinement: strict
 
 architectures:
   - build-on: amd64
-  
+
 parts:
   brave:
     plugin: dump
-    source: https://github.com/brave/brave-browser/releases/download/v0.58.21/brave-browser_0.58.21_amd64.deb
+    source: https://github.com/brave/brave-browser/releases/download/v$SNAPCRAFT_PROJECT_VERSION/brave-browser_$SNAPCRAFT_PROJECT_VERSION_amd64.deb
     source-type: deb
     # Correct path to icon.
     override-pull: |
       snapcraftctl pull
-      rm -rf etc/cron.daily/ 
+      rm -rf etc/cron.daily/
       rm -rf usr/bin/brave-browser
       chmod 0755 ./opt/brave.com/brave/brave-sandbox
       sed -i 's|Icon=brave-browser|Icon=/opt/brave.com/brave/product_logo_128\.png|g' usr/share/applications/brave-browser.desktop
@@ -49,9 +49,12 @@ apps:
     # Correct the TMPDIR path for Chromium Framework/Electron to
     # ensure libappindicator has readable resources.
     environment:
+      # Correct the TMPDIR path for Chromium Framework/Electron to
+      # ensure libappindicator has readable resources
       TMPDIR: $XDG_RUNTIME_DIR
+      # Fallback to XWayland if running in a Wayland session.
+      DISABLE_WAYLAND: 1
     plugs:
-      - alsa
       - avahi-observe
       - browser-sandbox
       - camera
